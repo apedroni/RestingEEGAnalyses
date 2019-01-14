@@ -9,7 +9,7 @@ workingDirectory = pwd;
 rootpath =  '/Volumes/methlab/Neurometric/2017/TestRetestPilot/';
 % path eye-tracker files
 % add EEGLAB path
-addpath('~/Dropbox/EEG_analysis/GeneralMatlab/eeglab14_1_1b/')
+addpath('./eeglab14_1_1b/')
 eeglab
 close
 % add functions paths

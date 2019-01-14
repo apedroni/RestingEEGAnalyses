@@ -1,3 +1,11 @@
+% Calculates the slope of the spectrogram using a robust linear regression.
+% Note that there is a more sophisticated method in fooof
+% input: 
+% EEG = eeglab EEG
+% settings = settings from RestingCreateSettings.
+% output: 
+% oneFall = slope for each electrode
+
 function out = oneFNoise(EEG, settings)
 fprintf('OneFNoise')
 % the window of anylsis {default = upper, lower }

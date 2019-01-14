@@ -1,16 +1,33 @@
 %% Batch Script to call the analysis functions for the Resting State Data
+% that FOOOF runs it must run on the methlab account, which has anaconda...
+% see the functions in resting_functions for descriptions
 % A Pedroni 2019
 
-%% that FOOOF runs it must run on the methlab account, which has anaconda...
+%% 
 clear, clc;
 
 % do you want to do only the first level analyses?
 firstlevel = 1;
+% do you want to continue with processing or start from scratch
+continueWithProcessing = 1;
+nSubAlreadyDone = 0;
 
+%% Create a structure with all settings for analyses
+RestingCreateSettings;
+
+%%
 % this is the path with the main analyses
 tmp = matlab.desktop.editor.getActive;
 cd(fileparts(tmp.Filename));
 workingDirectory = [ fileparts(tmp.Filename) '/' ];
+
+% add EEGLAB path
+addpath('./eeglab14_1_1b/')
+eeglab
+close
+
+% add functions
+addpath('./resting_functions/')
 
 % this is the path with the data:
 eegpath =  '/Volumes/methlab/Neurometric/2017/TestRetestPilot_TestRetestPilot_results/';
@@ -19,29 +36,44 @@ eegpath =  '/Volumes/methlab/Neurometric/2017/TestRetestPilot_TestRetestPilot_re
 etpath = '/Volumes/methlab/Neurometric/2017/TestRetestPilot/';
 
 % Create a directory for the GroupLevelData (i.e. microstate GFP peaks)
-if exist('/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/')
-rmdir( '/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/','s')
+if continueWithProcessing == 1
+    
+    if exist('/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/','dir')
+        load('/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/GEEG.mat');       
+        nSubAlreadyDone = size(GEEG,2) ./ settings.Microstate.Npeaks;
+        fprintf('group folder exists. Keep it and contiue with subject %d\n',nSubAlreadyDone)
+        
+    end
+    
+else
+    if exist('/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/','dir')
+        
+        answer = questdlg('restart and remove Group-data?', ...
+            'Yes', ...
+            'No, dont do this');
+       % Handle response
+        switch answer
+            case 'Yes'
+                rmdir( '/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/','s')
+                fprintf('removing group folder\n')
+                mkdir( '/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/')
+                fprintf('creating new group folder\n')
+            case 'No, dont do this'
+                
+        end
+        
+    end
 end
-mkdir( '/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/')
 
 % if this file not already exists... 
 if ~isfile('/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/GroupRestingEEG.mat')
     GEEG = []; % intialize this matrix to aggregate GFP peak maps for the microstate analysis
     chanlocs = [];
-    GEEGfile = '/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/GEEG.mat'
+    GEEGfile = '/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/GEEG.mat';
     save(GEEGfile,'GEEG','chanlocs')
 end
 
-% add EEGLAB path
-addpath('~/Dropbox/EEG_analysis/GeneralMatlab/eeglab14_1_1b/')
-eeglab
-close
 
-% add functions paths
-addpath('./resting_functions/');
-
-%% Create a structure with all settings for analyses
-RestingCreateSettings;
 
 % files to be processed (here we can select different quality standards p
 % is all preprocessed datasets
@@ -50,13 +82,13 @@ ftype = '*p*RES_EEG.mat';
 %cd(eegpath)
 
 dirInfo = dir(eegpath);
+fprintf('Number of available EEG files: %d\n',length(dirInfo))
 folder = find(arrayfun(@(n) 1 ~= strncmp(dirInfo(n).name,'.',1) && dirInfo(n).isdir == 1,1:length(dirInfo)));
 
-
-
 %% loop throug each folder (=subject)
-for sub=1:length(folder)
+for sub=nSubAlreadyDone+1:length(folder)
     
+    fprintf('Processing file %d...\n',sub)
        
     tic()
     
@@ -71,13 +103,14 @@ for sub=1:length(folder)
     file = dir([eegpath dirInfo(folder(sub)).name '/' ftype]);
         
     if isempty(file)
+        fprintf('Warning, file %d is empty and is skipped\n',sub)
         continue
     end
     
     %% load the EEG file
     load([eegpath dirInfo(folder(sub)).name '/' file.name]);
     if size(EEG.data,2) < 30000 % if EEG file is smaller than 60 seconds break
-        
+        fprintf('Warning, file %d is very small and is skipped\n',sub)
         continue
         
     end    
@@ -86,7 +119,7 @@ for sub=1:length(folder)
     EEG.filename = file.name;
     EEG.settings = settings;
     % use this path to save pics and other results
-    if exist([etpath dirInfo(folder(sub)).name '/Results/Resting/'])
+    if exist([etpath dirInfo(folder(sub)).name '/Results/Resting/'],'dir')
         rmdir([etpath dirInfo(folder(sub)).name '/Results/Resting/'],'s')
     end
     outpathfile = [etpath dirInfo(folder(sub)).name '/Results/Resting/' EEG.filename([1 , end-15:end-11])];
@@ -168,17 +201,17 @@ for sub=1:length(folder)
     
     %Get GFP peaks
     EEGtmp = pop_micro_selectdata( EEGtmp, ALLEEG, 'datatype', 'spontaneous',...
-        'avgref', 1, ...
-        'normalise', 1, ...
-        'MinPeakDist', 10, ...
-        'Npeaks', 500, ...
-        'GFPthresh', 1);
+        'avgref', settings.Microstate.avgref, ...
+        'normalise', settings.Microstate.normalise, ...
+        'MinPeakDist', settings.Microstate.MinPeakDist, ...
+        'Npeaks', settings.Microstate.Npeaks, ...
+        'GFPthresh', settings.Microstate.GFPthresh);
     
     %% microstate segmentation on the single level
-    EEGtmp = pop_micro_segment( EEGtmp, 'algorithm','modkmeans', 'Nmicrostates', 4,'Nrepetitions',100);
+    EEGtmp = pop_micro_segment( EEGtmp, 'algorithm','modkmeans', 'Nmicrostates', settings.Microstate.Nmicrostates,'Nrepetitions',settings.Microstate.Nrepetitions);
     EEG.microstate = EEGtmp.microstate;
     
-    figure;MicroPlotTopo( EEGtmp, 'plot_range', 4 );
+    figure; MicroPlotTopo( EEGtmp, 'plot_range', settings.Microstate.Nmicrostates );
     saveas(gcf,[outpathfile,'MicroPrototypes','.png'])
     close;
     
@@ -190,8 +223,8 @@ for sub=1:length(folder)
     
     %% collect the GFP peak maps and save them to a growing matfile. 
     
-    GEEGObj = matfile(GEEGfile,'Writable',true)
-    GEEGObj.GEEG = [GEEGObj.GEEG EEG.microstate.data]
+    GEEGObj = matfile(GEEGfile,'Writable',true);
+    GEEGObj.GEEG = [GEEGObj.GEEG EEG.microstate.data];
     GEEGObj.chanlocs = EEGtmp.chanlocs;
          
     %save(['/Users/methlab/Dropbox/AA_Neurometric/ANALYSES/GroupLevelResults/Resting/','AllGFPpeakMaps.mat'] ,'GEEG','chanlocs','-v7.3');

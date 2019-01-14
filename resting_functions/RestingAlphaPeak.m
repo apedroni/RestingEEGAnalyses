@@ -1,3 +1,20 @@
+% Extracts the Alpha Peak 
+% EEG = eeglab EEG
+% settings = settings from RestingCreateSettings
+% filename = filename for figure titles
+% eyes = 'eyesclosed', 'eyesopen'
+% outpathfile = where to save the figures
+% output: 
+% alphapeakfreqMax: find the maximimum point in the search range 
+% alphapeakamplitudeMax: the amplitude at this point
+% alphapeakfreqDerivative: first derivative crossing zero from left side 
+% alphapeakamplitudeDerivative: the amplitude at this point
+% alphapeakfreqGravity: 'gravity method' weighted mean
+% alphapeakamplitudeGravity: the amplitude at this point
+% uniquelyIdentifiable: [0/1] is there one peak identifiable with max and deriv.
+% method? 
+
+
 function out = RestingAlphaPeak(EEG,settings,filename,eyes,outpathfile)
 fprintf('\n:::RestingAlphaPeak...\n')
 settings

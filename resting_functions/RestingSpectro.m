@@ -1,10 +1,16 @@
 % Calculates the spectral density of the Resting EEG 
-% output: - EEG.specdata - Averaged power spectral density (PSD)
-%         - EEG.freqs
+% EEG = eeglab EEG
+% settings = settings from RestingCreateSettings.
+% eyes = 'eyesclosed', 'eyesopen'
+% outpathfile = where to save the figures
+% output: - EEG.specdata  Averaged power spectral density (PSD)
+%         - EEG.freqs = frequency bins
+% chanlocs = channel locations (for plotting)
+% name = method of frequency decomposition (welch, ftt)
+% eyes = see above
 
 function out = RestingSpectro(EEG,settings,eyes,outpathfile)
 fprintf('\n:::RestingSpectro...\n')
-%settings;
 
 %% extract snippets of X seconds out of EEG.data
 EEG.data = epoch(EEG.data,1:settings.winlength:size(EEG.data,2),settings.timelimits);
@@ -17,7 +23,7 @@ EEG.trials = size(EEG.data,3);
 EEG.goodsegments = [];
 for g=1:size(EEG.data,3)
     A = EEG.data(:,:,g);
-    if all(abs(A(:)) < settings.mvmax) ; % tests if all recorded samples are below mV max (e.g. 90 mV)
+    if all(abs(A(:)) < settings.mvmax)  % tests if all recorded samples are below mV max (e.g. 90 mV)
         EEG.goodsegments(end+1) = g;
     end
 end

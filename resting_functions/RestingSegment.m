@@ -2,8 +2,9 @@
 
 function [EEG]  = RestingSegment(EEG,settings)
 fprintf('\n:::RestingSegment...\n')
-settings;
+
 EEG = pop_epoch(EEG,{settings.events},settings.timelimits);
+
 % put it back to continuous EEG format and cleanup the EEG structure
 EEG.data = reshape(EEG.data,[EEG.nbchan,EEG.pnts*EEG.trials]);
 EEG.pnts = size(EEG.data,2);

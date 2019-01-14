@@ -1,12 +1,25 @@
-%% Note to make a Python package working (if it is not installed by using pip)
+% This script parametrizes the spectrogram according to the Voytek Python scripts. 
+% It uses the python functions so they need to be made available to matlab:
+% This works for Mac OS: Note to make a Python package working (if it is not installed by using pip)
 % 1. CREATE A FILE CALLED XYZ.pth in
 % ~/anaconda/lib/python3.6/site-packages/
 % 2. the path of the library that you want to include in
 % e.g. ~/Dropbox/EEG_analysis/fooof-master/
-
+% inputs:
+% EEG = eeglab EEG
+% settings = settings from RestingCreateSettings
+% filename = filename for figure titles
+% eyes = 'eyesclosed', 'eyesopen'
+% outpathfile = where to save the figures
+% outputs: 
+%      bgpara: background noise parameters
+%    oscpara: oscillatory parameters
+%         r2: goodness of fit
+%      error: error 
 
 function out = OneFooof(EEG,settings,outpathfile,eyes)
 fprintf('\n:::FOOOF...\n')
+settings
 
 % Choose index of Cz and Oz (E75) to only plot those
 outpathfile = [outpathfile, eyes, '_FOOOF_Report']

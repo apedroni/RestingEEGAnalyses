@@ -91,23 +91,30 @@ settings.fooof.el = {'Cz','E75'};
 settings.fooof.freq_range = [1, 50];
 
 %% Indidivual Frequency Bands
+% The settings are done in the function, because they are dependent on the
+% individual alpha peak that needs to be computed. 
 % Doppelmayr M, Klimesch W, Pachinger T, Ripper B. Individual differences
 % in brain dynamics: important implications for the calculation of
 % event-related band power. Biol Cybern 1998;79:49?57:  
-% 0.4*IAF?0.6*IAF, 0.6*IAF?0.8*IAF, 0.8*IAF?IAF, IAF?1.2*IAF, and 1.2*IAF?25 Hz for theta, lower-1-alpha, lower-2-alpha, upper alpha, and beta, respectively (Doppelmayr et al. 1998).
-
+% 0.4*IAF?0.6*IAF, 0.6*IAF?0.8*IAF, 0.8*IAF?IAF, IAF?1.2*IAF, and
+% 1.2*IAF?25 Hz for theta, lower-1-alpha, lower-2-alpha, upper alpha, and
+% beta, respectively (Doppelmayr et al. 1998).
 
                             
 %% Microstates Analysis 
 settings.Microstate = {}
 settings.Microstate.Fun = 'RestingMicrostate'
 settings.Microstate.Path = {}
+settings.Microstate.avgref = 1; % re-reference
 settings.Microstate.Npeaks = 500; % how many peaks per subject do you want to extract
-settings.Microstate.MinPeakDist  = 50 ; % in ms
-settings.Microstate.GFPthresh = 2 ; % exclude GFP peaks if they exceed X sd. 
+settings.Microstate.MinPeakDist  = 10 ; % in ms
+settings.Microstate.GFPthresh = 1 ; % exclude GFP peaks if they exceed X sd. 
 settings.Microstate.normalise = 1 ; % Normalise by average channel std.  
 settings.Microstate.lpf = 2;
 settings.Microstate.hpf = 20;
+% clustering
+settings.Microstate.Nmicrostates = 4;
+settings.Microstate.Nrepetitions = 100;
 clc
 %save('Restingsettings.mat','settings')
 

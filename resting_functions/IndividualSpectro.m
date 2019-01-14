@@ -1,38 +1,42 @@
+% calculates the individual frequency bands,based on alpha peak. as
+% suggested by: Doppelmayr M, Klimesch W, Pachinger T, Ripper B. Individual
+% differences in brain dynamics: important implications for the calculation
+% of event-related band power. Biol Cybern 1998;79:49?57: 0.4*IAF?0.6*IAF,
+% 0.6*IAF?0.8*IAF, 0.8*IAF?IAF, IAF?1.2*IAF, and 1.2*IAF?25 Hz for theta,
+% lower-1-alpha, lower-2-alpha, upper alpha, and beta, respectively
+% (Doppelmayr et al. 1998). In addition all possible ratios between
+% frequency bands and electrode clusters are computed --> so it is super
+% exploratory!!!
+% output: Indfbands = individual alpha band power
+% This script has not been tested very thoroughly. 
 
 function EEG = IndividualSpectro(EEG,settings)
-%Calculates the inidivualized frequency bands, based on alpha peak.
-
-% Doppelmayr M, Klimesch W, Pachinger T, Ripper B. Individual differences
-% in brain dynamics: important implications for the calculation of
-% event-related band power. Biol Cybern 1998;79:49?57:  
-% 0.4*IAF?0.6*IAF, 0.6*IAF?0.8*IAF, 0.8*IAF?IAF, IAF?1.2*IAF, and 1.2*IAF?25 Hz for theta, lower-1-alpha, lower-2-alpha, upper alpha, and beta, respectively (Doppelmayr et al. 1998).
 
 IAF = EEG.alphaPeak.alphapeakfreqGravity;
 
-
 Indfbands(1).lowfreqs = 0.4*IAF;
 Indfbands(1).highfreqs = 0.6*IAF;
-Indfbands(1).name  = 'theta';
+Indfbands(1).name  = 'theta__';
 Indfbands(1).absmean  = [];
 
 Indfbands(2).lowfreqs = 0.6*IAF;
 Indfbands(2).highfreqs = 0.8*IAF;
-Indfbands(2).name  = 'lower_1_alpha';
+Indfbands(2).name  = 'lower_1_alpha__';
 Indfbands(2).absmean  = [];
 
 Indfbands(3).lowfreqs = 0.8*IAF;
 Indfbands(3).highfreqs = IAF;
-Indfbands(3).name  = 'lower_2_alpha';
+Indfbands(3).name  = 'lower_2_alpha__';
 Indfbands(3).absmean  = [];
 
 Indfbands(4).lowfreqs = IAF;
 Indfbands(4).highfreqs = 1.2 * IAF;
-Indfbands(4).name  = 'upper_alpha';
+Indfbands(4).name  = 'upper_alpha__';
 Indfbands(4).absmean  = [];
 
 Indfbands(5).lowfreqs = 1.2 * IAF;
 Indfbands(5).highfreqs = 25;
-Indfbands(5).name  = 'beta';
+Indfbands(5).name  = 'beta__';
 Indfbands(5).absmean  = [];
 
 Indfbands = computeFbands(EEG.specdata,EEG.freqs,Indfbands,settings.eleclusters,EEG.chanlocs);
