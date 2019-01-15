@@ -30,23 +30,23 @@ close
 addpath('./resting_functions/')
 
 % this is the path with the data:
-eegpath =  '/Volumes/methlab/Neurometric/2017/TestRetestPilot_TestRetestPilot_results/';
+eegpath =  '/Volumes/methlab-1/Neurometric/2017/TestRetestPilot_TestRetestPilot_results/';
 
 % path of eye-tracker files
-etpath = '/Volumes/methlab/Neurometric/2017/TestRetestPilot/';
+etpath = '/Volumes/methlab-1/Neurometric/2017/TestRetestPilot/';
 
 % Create a directory for the GroupLevelData (i.e. microstate GFP peaks)
 if continueWithProcessing == 1
     
-    if exist('/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/','dir')
-        load('/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/GEEG.mat');       
+    if exist('/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/','dir')
+        load('/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/GEEG.mat');       
         nSubAlreadyDone = size(GEEG,2) ./ settings.Microstate.Npeaks;
         fprintf('group folder exists. Keep it and contiue with subject %d\n',nSubAlreadyDone)
         
     end
     
 else
-    if exist('/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/','dir')
+    if exist('/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/','dir')
         
         answer = questdlg('restart and remove Group-data?', ...
             'Yes', ...
@@ -54,9 +54,9 @@ else
        % Handle response
         switch answer
             case 'Yes'
-                rmdir( '/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/','s')
+                rmdir( '/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/','s')
                 fprintf('removing group folder\n')
-                mkdir( '/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/')
+                mkdir( '/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/')
                 fprintf('creating new group folder\n')
             case 'No, dont do this'
                 
@@ -66,10 +66,10 @@ else
 end
 
 % if this file not already exists... 
-if ~isfile('/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/GroupRestingEEG.mat')
+if ~isfile('/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/GroupRestingEEG.mat')
     GEEG = []; % intialize this matrix to aggregate GFP peak maps for the microstate analysis
     chanlocs = [];
-    GEEGfile = '/Volumes/methlab/Neurometric/2017/GroupLevelData/Resting/GEEG.mat';
+    GEEGfile = '/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/GEEG.mat';
     save(GEEGfile,'GEEG','chanlocs')
 end
 
