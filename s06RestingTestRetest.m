@@ -1,4 +1,4 @@
-%% Batch Script to call the analysis functions for the Resting State Data
+%% Merge all files to one structure
 clear, clc;
 
 warning('off','all')
@@ -6,19 +6,16 @@ warning('off','all')
 workingDirectory = pwd;
 
 % this is the path with the results:
-rootpath =  '/Volumes/methlab-1/Neurometric/Test_Retest_Data/';
+rootpath =  '/Volumes/methlab-1/Neurometric/2017/TestRetestPilot/';
 % path eye-tracker files
 % add EEGLAB path
-addpath('~/Dropbox/EEG_analysis/GeneralMatlab/eeglab14_1_1b/')
+addpath('./eeglab14_1_1b/')
 eeglab
 close
 % add functions paths
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/functions/Rest/');
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/functions/')
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/')
-
+addpath('./resting_functions/');
 %% get the complete Datasets (with two timepoints) 
-load('~/Dropbox/AA_Neurometric/ANALYSES/RetestResults/RestingEEGwithMicrostates.mat')
+load('/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/RestingEEGwithMicrostates.mat')
 
 i = 1;
 for k=1:length(AllData)
@@ -142,13 +139,13 @@ R.spectro.eyesclosed.welch.alphaPeak.uniquelyIdentifiable = [A ;  B];
 
 %% 1/f Noise
 
-structchainA = ['T1.spectro.eyesclosed.welch.onefnoise' ];
-structchainB = ['T2.spectro.eyesclosed.welch.onefnoise' ];
+structchainA = ['T1.spectro.eyesclosed.welch.onefnoise.oneFall' ];
+structchainB = ['T2.spectro.eyesclosed.welch.onefnoise.oneFall' ];
 A = reshape(getStruct(Structure,structchainA),105,length(CompleteData));
 B = reshape(getStruct(Structure,structchainB),105,length(CompleteData));
 
     for i = 1:size(A,1)
-        R.spectro.eyesclosed.welch.onefnoise(i,:) = corr(A(i,:)',B(i,:)','rows','pairwise');
+        R.spectro.eyesclosed.welch.onefnoise.oneFall(i,:) = corr(A(i,:)',B(i,:)','rows','pairwise');
     end
 
 
@@ -278,8 +275,8 @@ R.spectro.eyesclosed.fft.alphaPeak.uniquelyIdentifiable = [A ;  B];
 
 %% 1/f Noise
 
-structchainA = ['T1.spectro.eyesclosed.fft.onefnoise' ];
-structchainB = ['T2.spectro.eyesclosed.fft.onefnoise' ];
+structchainA = ['T1.spectro.eyesclosed.fft.onefnoise.oneFall' ];
+structchainB = ['T2.spectro.eyesclosed.fft.onefnoise.oneFall' ];
 A = reshape(getStruct(Structure,structchainA),105,length(CompleteData));
 B = reshape(getStruct(Structure,structchainB),105,length(CompleteData));
 
@@ -411,8 +408,8 @@ R.spectro.eyesopen.welch.alphaPeak.uniquelyIdentifiable = [A ;  B];
 
 %% 1/f Noise
 
-structchainA = ['T1.spectro.eyesopen.welch.onefnoise' ];
-structchainB = ['T2.spectro.eyesopen.welch.onefnoise' ];
+structchainA = ['T1.spectro.eyesopen.welch.onefnoise.oneFall' ];
+structchainB = ['T2.spectro.eyesopen.welch.onefnoise.oneFall' ];
 A = reshape(getStruct(Structure,structchainA),105,length(CompleteData));
 B = reshape(getStruct(Structure,structchainB),105,length(CompleteData));
 
@@ -548,8 +545,8 @@ R.spectro.eyesopen.fft.alphaPeak.uniquelyIdentifiable = [A ;  B];
 
 %% 1/f Noise
 
-structchainA = ['T1.spectro.eyesopen.fft.onefnoise' ];
-structchainB = ['T2.spectro.eyesopen.fft.onefnoise' ];
+structchainA = ['T1.spectro.eyesopen.fft.onefnoise.oneFall' ];
+structchainB = ['T2.spectro.eyesopen.fft.onefnoise.oneFall' ];
 A = reshape(getStruct(Structure,structchainA),105,length(CompleteData));
 B = reshape(getStruct(Structure,structchainB),105,length(CompleteData));
 
@@ -1019,4 +1016,4 @@ for i = 1:size(A,1)
 end
 
 
-save('~/Dropbox/AA_Neurometric/ANALYSES/RetestResults/TestRetestRestingResults.mat','R')
+save('/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/TestRetestRestingResults.mat','R')

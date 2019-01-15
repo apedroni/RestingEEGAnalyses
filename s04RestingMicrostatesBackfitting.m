@@ -2,10 +2,10 @@
 clear, clc;
 
 % this is the path with the main analyses
-workingDirectory = '~/Dropbox/AA_Neurometric/ANALYSES/RestingEEGAnalyses/';
+workingDirectory = '/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/';
 
 % this is the path with the data:
-eegpath =  '/Volumes/methlab/Neurometric/Test_Retest_Data/';
+eegpath =  '/Volumes/methlab-1/Neurometric/2017/TestRetestPilot/';
 
 % add EEGLAB path
 addpath('~/Dropbox/EEG_analysis/GeneralMatlab/eeglab14_1_1b/')
@@ -13,17 +13,14 @@ eeglab
 close
 
 % add functions paths
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/functions/Rest/');
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/functions/');
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/RestingEEGAnalyses/');
-
-
+% add functions paths
+addpath('./resting_functions/')
 
 %% Create a structure with all settings for analyses
 RestingCreateSettings;
 
 %% load the prototypes maps
-load('~/Dropbox/AA_Neurometric/ANALYSES/RestingEEGAnalyses/MicrostateResults/Prototypes.mat')
+load([workingDirectory 'MicrostateResults/Prototypes.mat'])
 
 
 
@@ -80,12 +77,11 @@ for sub=1:length(folder)
     EEGtmp = pop_micro_fit( EEGtmp, 'polarity', 0 );
     EEGtmp= pop_micro_smooth( EEGtmp, 'label_type', 'backfit', ...
         'smooth_type', 'reject segments', ...
-        'minTF', 20, ...
+        'minTime', 20, ...
         'polarity', 0 );
     EEGtmp = pop_micro_stats( EEGtmp, 'label_type', 'backfit', ...
         'polarity', 0 );
-    
-    
+        
     EEG.microstateOurVers = EEGtmp.microstate;
     
     %% use the overall Prototypes
@@ -95,7 +91,7 @@ for sub=1:length(folder)
     EEGtmp = pop_micro_fit( EEGtmp, 'polarity', 0 );  
     EEGtmp= pop_micro_smooth( EEGtmp, 'label_type', 'backfit', ...
         'smooth_type', 'reject segments', ...
-        'minTF', 20, ...
+        'minTime', 20, ...
         'polarity', 0 );
     % 3.6 Calculate microstate statistics
     EEGtmp = pop_micro_stats( EEGtmp, 'label_type', 'backfit', ...
@@ -120,7 +116,7 @@ for sub=1:length(folder)
     EEGtmp = pop_micro_fit( EEGtmp, 'polarity', 0 );
     EEGtmp= pop_micro_smooth( EEGtmp, 'label_type', 'backfit', ...
         'smooth_type', 'reject segments', ...
-        'minTF', 20, ...
+        'minTime', 20, ...
         'polarity', 0 );
     EEGtmp = pop_micro_stats( EEGtmp, 'label_type', 'backfit', ...
         'polarity', 0 );
@@ -133,7 +129,7 @@ for sub=1:length(folder)
     EEGtmp = pop_micro_fit( EEGtmp, 'polarity', 0 );  
     EEGtmp= pop_micro_smooth( EEGtmp, 'label_type', 'backfit', ...
         'smooth_type', 'reject segments', ...
-        'minTF', 20, ...
+        'minTime', 20, ...
         'polarity', 0 );
     % 3.6 Calculate microstate statistics
     EEGtmp = pop_micro_stats( EEGtmp, 'label_type', 'backfit', ...
@@ -165,7 +161,7 @@ for sub=1:length(folder)
         EEGtmp = pop_micro_fit( EEGtmp, 'polarity', 0 );
         EEGtmp= pop_micro_smooth( EEGtmp, 'label_type', 'backfit', ...
             'smooth_type', 'reject segments', ...
-            'minTF', 20, ...
+            'minTime', 20, ...
             'polarity', 0 );
         EEGtmp = pop_micro_stats( EEGtmp, 'label_type', 'backfit', ...
             'polarity', 0 );
@@ -176,7 +172,7 @@ for sub=1:length(folder)
     end
 
     %% save the results (note that EEG.data has avg-referenced and filtered data)
-    save(file.name,'EEG','ET_resting','params','rate','-v7.3');
+    save(file.name,'EEG','ET_resting','automagic','settings','-v7.3');
    
     % go back to the EEGpath
     cd(eegpath);

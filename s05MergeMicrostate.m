@@ -6,17 +6,14 @@ warning('off','all')
 workingDirectory = pwd;
 
 % this is the path with the results:
-rootpath =  '/Volumes/methlab/Neurometric/Test_Retest_Data/';
+rootpath =  '/Volumes/methlab-1/Neurometric/2017/TestRetestPilot/';
 % path eye-tracker files
 % add EEGLAB path
-addpath('~/Dropbox/EEG_analysis/GeneralMatlab/eeglab14_1_1b/')
+addpath('./eeglab14_1_1b/')
 eeglab
 close
 % add functions paths
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/functions/Rest/');
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/functions/')
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/')
-
+addpath('./resting_functions/');
 
 % file to be processed:
 ftype = '*REST_Results.mat';
@@ -46,8 +43,8 @@ for sub=1:length(folderA)
             %% move the data to a single structure with both timepoints...
             AllData(sub).T1.spectro = EEG.spectro;
             AllData(sub).T1.ID = file.name;
-            AllData(sub).T1.rate = rate;
-            AllData(sub).T1.params = params;
+            AllData(sub).T1.automagic = automagic;
+            AllData(sub).T1.settings = settings;
             
             
             AllData(sub).T1.microstate = EEG.microstate ;
@@ -75,8 +72,8 @@ for sub=1:length(folderA)
                     load(file.name);
                     AllData(sub).T2.spectro = EEG.spectro;
                     AllData(sub).T2.ID = file.name;
-                    AllData(sub).T2.rate = rate;
-                    AllData(sub).T2.params = params;
+                    AllData(sub).T2.automagic = automagic;
+                    AllData(sub).T2.settings = settings;
                     
                     AllData(sub).T2.microstate = EEG.microstate ;
                     AllData(sub).T2.microstateOurVers = EEG.microstateOurVers ;
@@ -108,4 +105,4 @@ for sub=1:length(folderA)
 end
 warning('on','all')
 
-save('~/Dropbox/AA_Neurometric/ANALYSES/RetestResults/RestingEEGwithMicrostates.mat','AllData','-v7.3')
+save('/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/RestingEEGwithMicrostates.mat','AllData','-v7.3')

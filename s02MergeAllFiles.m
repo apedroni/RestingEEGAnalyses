@@ -6,7 +6,7 @@ warning('off','all')
 workingDirectory = pwd;
 
 % this is the path with the results:
-rootpath =  '/Volumes/methlab/Neurometric/2017/TestRetestPilot/';
+rootpath =  '/Volumes/methlab-1/Neurometric/2017/TestRetestPilot/';
 % path eye-tracker files
 % add EEGLAB path
 addpath('./eeglab14_1_1b/')
@@ -92,4 +92,4 @@ for sub=1:length(folderA)
 end
 warning('on','all')
 
-save('~/Dropbox/AA_Neurometric/ANALYSES/RetestResults/RestingEEG.mat','AllData','-v7.3')
+save('/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/RestingEEG.mat','AllData','-v7.3')

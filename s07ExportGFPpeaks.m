@@ -1,4 +1,4 @@
-%% Export GFPpeaks for Cartool
+%% Merge all files to one structure
 clear, clc;
 
 warning('off','all')
@@ -6,19 +6,16 @@ warning('off','all')
 workingDirectory = pwd;
 
 % this is the path with the results:
-rootpath =  '/Volumes/methlab/Neurometric/Test_Retest_Data/';
+rootpath =  '/Volumes/methlab-1/Neurometric/2017/TestRetestPilot/';
 % path eye-tracker files
 % add EEGLAB path
-addpath('~/Dropbox/EEG_analysis/GeneralMatlab/eeglab14_1_1b/')
+addpath('./eeglab14_1_1b/')
 eeglab
 close
 % add functions paths
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/functions/Rest/');
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/functions/')
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/')
-
+addpath('./resting_functions/');
 %% get the complete Datasets (with two timepoints) 
-load('~/Dropbox/AA_Neurometric/ANALYSES/RetestResults/RestingEEGwithMicrostates.mat')
+load('/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/RestingEEGwithMicrostates.mat')
 
 i = 1;
 GFPpeaksT1 = []; GFPpeaksT2 = [];
@@ -35,8 +32,8 @@ for k=1:length(AllData)
 end
 
 
-dlmwrite(['~/Dropbox/AA_Neurometric/ANALYSES/RestingEEGAnalyses/MicrostateResults/','GFPpeaksT1.ep'], GFPpeaksT1','delimiter',' ')
-dlmwrite(['~/Dropbox/AA_Neurometric/ANALYSES/RestingEEGAnalyses/MicrostateResults/','GFPpeaksT2.ep'], GFPpeaksT2','delimiter',' ')
+dlmwrite(['/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/','GFPpeaksT1.ep'], GFPpeaksT1','delimiter',' ')
+dlmwrite(['/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/','GFPpeaksT2.ep'], GFPpeaksT2','delimiter',' ')
 
 
 

@@ -4,24 +4,22 @@ clear, clc;
 
 RestingCreateSettings;
 %% Backfitting
-workingDirectory = '~/Dropbox/AA_Neurometric/ANALYSES/RestingEEGAnalyses/';
-
+workingDirectory = '/Volumes/methlab-1/Neurometric/2017/GroupLevelData/Resting/';
+mkdir([workingDirectory 'MicrostateResults/'])
 % this is the path with the data:
-eegpath =  '/Volumes/methlab/Neurometric/Test_Retest_Data_Neurometric_Sahar_New_results/';
+eegpath =  '/Volumes/methlab-1/Neurometric/2017/TestRetestPilot_TestRetestPilot_results/';
 
 
 % add EEGLAB path
-addpath('~/Dropbox/EEG_analysis/GeneralMatlab/eeglab14_1_1b/')
+addpath('./eeglab14_1_1b/')
 eeglab
 close
 
 % add functions paths
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/functions/Rest/');
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/functions/')
-addpath('~/Dropbox/AA_Neurometric/ANALYSES/')
+addpath('./resting_functions/')
 
-load('~/Dropbox/AA_Neurometric/ANALYSES/RetestResults/chanlocs105.mat')
-load('~/Dropbox/AA_Neurometric/ANALYSES/RetestResults/RestingEEG.mat')
+load([workingDirectory 'RestingEEG.mat'])
+chanlocs = AllData(1).T1.spectro.eyesclosed.welch.chanlocs; % chanlocs for topoplots
 
 i = 1;
 for k=1:length(AllData)
@@ -34,8 +32,9 @@ for k=1:length(AllData)
            
     end
 end
-%% A) SEGMENTATION on concatenated GFP peak maps OUR STYLE
 
+%% A) SEGMENTATION on concatenated GFP peak maps (OUR STYLE)
+% separate for T1 and T2
 %% T1 
 EEGtmp = eeg_emptyset();
 EEGtmp.setname = 'GFPpeakmaps'
@@ -51,8 +50,8 @@ EEGtmp.microstate.data = EEGtmp.data;
 EEG.pnts = size(EEGtmp.data,2)
 EEGtmp.times = (1:size(EEG.data,2))*1000/EEG.srate
 
-%% 2. Segment Data into Microstates
-EEG = pop_micro_segment ( EEGtmp, 'algorithm','modkmeans', 'Nmicrostates', 4,'Nrepetitions',50)
+% Segment Data into Microstates
+EEG = pop_micro_segment ( EEGtmp, 'algorithm','modkmeans', 'Nmicrostates', settings.Microstate.Nmicrostates,'Nrepetitions',settings.Microstate.Nrepetitions)
 
 h = figure
 for z = 1:4
@@ -60,7 +59,7 @@ for z = 1:4
     title(['Map ' num2str(z)])
     topoplot(EEG.microstate.prototypes(:,z)',chanlocs )
 end
-saveas(h,'./MicrostateResults/ProtoMapsT1.png');
+saveas(h,[workingDirectory 'MicrostateResults/ProtoMapsT1_from_concatenated_GFPpeaks.png']);
 
 T1 = EEG.microstate;
 
@@ -80,8 +79,8 @@ EEG.microstate.data = EEG.data;
 EEG.pnts = size(EEG.data,2);
 EEG.times = (1:size(EEG.data,2))*1000/EEG.srate;
 
-%% 2. Segment Data into Microstates
-EEG = pop_micro_segment ( EEG, 'algorithm','modkmeans', 'Nmicrostates', 4,'Nrepetitions',50)
+% Segment Data into Microstates
+EEG = pop_micro_segment ( EEGtmp, 'algorithm','modkmeans', 'Nmicrostates', settings.Microstate.Nmicrostates,'Nrepetitions',settings.Microstate.Nrepetitions)
 
 h = figure
 for z = 1:4
@@ -89,13 +88,14 @@ for z = 1:4
     title(['Map ' num2str(z)])
     topoplot(EEG.microstate.prototypes(:,z)',chanlocs )
 end
-saveas(h,'./MicrostateResults/ProtoMapsT2.png');
+saveas(h,[workingDirectory 'MicrostateResults/ProtoMapsT2_from_concatenated_GFPpeaks.png']);
 
 T2 = EEG.microstate
 
 
 
-%% T1 and T2 combined
+%% B) SEGMENTATION on concatenated GFP peak maps (OUR STYLE)
+% T1 and T2 combined 
 
 EEG = eeg_emptyset();
 EEG.setname = 'GFPpeakmaps'
@@ -111,8 +111,8 @@ EEG.microstate.data =  EEG.data;
 EEG.pnts = size(EEG.data,2)
 EEG.times = (1:size(EEG.data,2))*1000/EEG.srate
 
-%% 2. Segment Data into Microstates
-EEG = pop_micro_segment ( EEG, 'algorithm','modkmeans', 'Nmicrostates', 4,'Nrepetitions',50)
+% Segment Data into Microstates
+EEG = pop_micro_segment ( EEGtmp, 'algorithm','modkmeans', 'Nmicrostates', settings.Microstate.Nmicrostates,'Nrepetitions',settings.Microstate.Nrepetitions)
 
 h = figure
 for z = 1:4
@@ -120,7 +120,7 @@ for z = 1:4
     title(['Map ' num2str(z)])
     topoplot(EEG.microstate.prototypes(:,z)',chanlocs )
 end
-saveas(h,'./MicrostateResults/ProtoMapsT1T2.png');
+saveas(h,[workingDirectory 'MicrostateResults/ProtoMapsT1T2_from_concatenated_GFPpeaks.png']);
 
 T1T2 = EEG.microstate
 
@@ -130,9 +130,8 @@ Prototypes.OurVersion.T2 = T2;
 Prototypes.OurVersion.T1T2 = T1T2;
 
 
-%% B) Sorting the microstates with thomas' algorithm... 
-%load(['~/Dropbox/AA_Neurometric/ANALYSES/GroupLevelResults/Resting/' 'SingleSubjectSegmentation.mat'])
-
+%% C) Sorting the microstates with thomas' algorithm... 
+% T1
 SingleProtos = []
 for i = 1:length(CompleteData) 
 SingleProtos(i,:,:) = CompleteData(i).T1.microstate.prototypes';
@@ -148,9 +147,9 @@ for z = 1:4
     title(['Map ' num2str(z)])
     topoplot(MeanMap(z,:),chanlocs )
 end
-saveas(h,'./MicrostateResults/ProtoMapsThomasVersionT1.png');
+saveas(h,[workingDirectory 'MicrostateResults/ProtoMapsT1_KoenigVersion.png']);
 
-% plot all Microstate Segmentations
+%plot all Microstate Segmentations
 % figure;
 % o = 1;
 % for k = 1:size(SortedMaps,1)
@@ -167,6 +166,7 @@ saveas(h,'./MicrostateResults/ProtoMapsThomasVersionT1.png');
 %     topoplot(MeanMap(z,:)',chanlocs,'style','fill','conv','on','electrodes','off' )
 % end
 
+
 for i = 1:length(CompleteData)
 Subjects{i,:} = CompleteData(i).T1.ID
 end
@@ -176,10 +176,9 @@ Prototypes.Thomas.T1.prototypes =  MeanMap;
 Prototypes.Thomas.T1.sortedprototypes =  SortedMaps;
 Prototypes.Thomas.T1.Subjects = Subjects
 
-%save('./MicrostateResults/ProtosSubThomasT1.mat','MeanMap','SortedMaps','-v7.3');
-   
+%save([workingDirectory 'MicrostateResults/ProtosSubThomasT1.mat'],'MeanMap','SortedMaps','-v7.3');
 
-
+% T2
 SingleProtos = []
 for i = 1:length(CompleteData) 
 SingleProtos(i,:,:) = CompleteData(i).T2.microstate.prototypes';
@@ -197,7 +196,7 @@ for z = 1:4
     title(['Map ' num2str(z)])
     topoplot(MeanMap(z,:),chanlocs )
 end
-saveas(h,'./MicrostateResults/ProtoMapsThomasVersionT2.png');
+saveas(h,[workingDirectory 'MicrostateResults/ProtoMapsT2_KoenigVersion.png']);
 
 % plot all Microstate Segmentations
 % figure;
@@ -224,11 +223,10 @@ Prototypes.Thomas.T2.prototypes =  MeanMap;
 Prototypes.Thomas.T2.sortedprototypes =  SortedMaps;
 Prototypes.Thomas.T2.Subjects = Subjects
 
-%save('./MicrostateResults/ProtosSubThomasT2.mat','MeanMap','SortedMaps','-v7.3');
+%save([workingDirectory 'MicrostateResults/ProtosSubThomasT2.mat'],'MeanMap','SortedMaps','-v7.3');
 
 
 %% T1T2
-
 
 for i = 1:length(CompleteData) 
 SingleProtos1(i,:,:) = CompleteData(i).T1.microstate.prototypes';
@@ -245,7 +243,7 @@ for z = 1:4
     title(['Map ' num2str(z)])
     topoplot(MeanMap(z,:),chanlocs )
 end
-saveas(h,'./MicrostateResults/ProtoMapsThomasVersionT2.png');
+saveas(h,[workingDirectory 'MicrostateResults/ProtoMapsT1T2_KoenigVersion.png']);
 
 % plot all Microstate Segmentations
 % figure;
@@ -267,7 +265,7 @@ saveas(h,'./MicrostateResults/ProtoMapsThomasVersionT2.png');
 Prototypes.Thomas.T1T2.prototypes =  MeanMap;
 Prototypes.Thomas.T1T2.sortedprototypes =  SortedMaps;
 
-%save('./MicrostateResults/ProtosSubThomasT1T2.mat','MeanMap','SortedMaps','-v7.3');
+%save([workingDirectory 'MicrostateResults/ProtosSubThomasT1T2.mat'],'MeanMap','SortedMaps','-v7.3');
    
 
-save('~/Dropbox/AA_Neurometric/ANALYSES/RestingEEGAnalyses/MicrostateResults/Prototypes.mat','Prototypes','-v7.3') 
+save([workingDirectory 'MicrostateResults/Prototypes.mat'],'Prototypes','-v7.3') 
