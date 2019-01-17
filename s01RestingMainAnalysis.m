@@ -7,7 +7,7 @@
 clear, clc;
 
 % do you want to do only the first level analyses?
-firstlevel = 1;
+% firstlevel = 1;
 % do you want to continue with processing or start from scratch
 continueWithProcessing = 1;
 nSubAlreadyDone = 0;

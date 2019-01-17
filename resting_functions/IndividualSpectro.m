@@ -82,8 +82,6 @@ for i1 = 1:length(Indfbands)
     end
 end
 
-
-
 EEG.Indfbands = Indfbands;
 EEG.Ratios = D;
 

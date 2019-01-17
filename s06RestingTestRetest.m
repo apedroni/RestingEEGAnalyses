@@ -1,4 +1,4 @@
-%% Merge all files to one structure
+%% Analyse test retest reliability (correlations)
 clear, clc;
 
 warning('off','all')
